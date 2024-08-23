@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+    <title>
+        Sancho test website
+    </title>
+
+    <link rel="stylesheet" href="playlist.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body style="overflow: hidden;">
+
+
+    <div id="box1" class="box1">
+
+        <div class="authorizeText" id="authorizeText">
+
+            Welcome to spotify playlist generator!
+            <br>
+            Click button to authorize
+
+        </div>
+
+        <button id="authorize" class="authorize" style="background: none;">
+            <img src="spotify.png" alt="">
+        </button>
+
+    </div>
+
+    <div id="generateContainer" class="generateContainer">
+
+        <div id="searchContainer" class="searchContainer">
+
+            <div id="searchContainer2" class="searchContainer2">
+
+                <input type="text" class="searchInput" id="searchInput" placeholder="Search for a song"
+                    autocomplete="off">
+
+                <div id="songDropdown" class="songDropdown">
+
+                </div>
+
+            </div>
+
+            <div id="songContainer" class="songContainer">
+
+                <img id="cover" class="cover">
+
+                <div id="sliders" class="sliders">
+
+                    <div class="acousticnessText">
+                        acousticness
+                        <div id="acousticness-slider-wrapper" class="acousticness-slider-wrapper">
+                            <input type="range" min="0" max="0.5" step="0.01" value="0.5" id="acousticness"
+                                class="theRange">
+                            <span id="acousticnessValue">0.5</span>
+                        </div>
+                    </div>
+
+                    <div class="danceabilityText">
+                        danceability
+                        <div id="danceability-slider-wrapper" class="danceability-slider-wrapper">
+                            <input type="range" min="0" max="0.5" step="0.01" value="0.5" id="danceability"
+                                class="theRange">
+                            <span id="danceabilityValue">0.5</span>
+                        </div>
+                    </div>
+
+
+                    <div class="energyText">
+                        energy
+                        <div id="energy-slider-wrapper" class="energy-slider-wrapper">
+                            <input type="range" min="0" max="0.5" step="0.01" value="0.5" id="energy" class="theRange">
+                            <span id="energyValue">0.5</span>
+                        </div>
+                    </div>
+
+                    <div class="instrumentalnessText">
+                        instrumental
+                        <div id="instrumentalness-slider-wrapper" class="instrumentalness-slider-wrapper">
+                            <input type="range" min="0" max="0.5" step="0.01" value="0.5" id="instrumentalness"
+                                class="theRange">
+                            <span id="instrumentalnessValue">0.5</span>
+                        </div>
+                    </div>
+
+
+                    <div class="livenessText">
+                        liveness
+                        <div id="liveness-slider-wrapper" class="liveness-slider-wrapper">
+                            <input type="range" min="0" max="0.5" step="0.01" value="0.5" id="liveness"
+                                class="theRange">
+                            <span id="livenessValue">0.5</span>
+                        </div>
+                    </div>
+
+
+                    <div class="loudnessText">
+                        loudness
+                        <div id="loudness-slider-wrapper" class="loudness-slider-wrapper">
+                            <input type="range" min="-60" max="-30" step="1" value="-30" id="loudness" class="theRange">
+                            <span id="loudnessValue">-30</span>
+                        </div>
+                    </div>
+
+
+                    <div class="speechinessText">
+                        speechiness
+                        <div id="speechiness-slider-wrapper" class="speechiness-slider-wrapper">
+                            <input type="range" min="0" max="0.5" step="0.01" value="0.5" id="speechiness"
+                                class="theRange">
+                            <span id="speechinessValue">0.5</span>
+                        </div>
+                    </div>
+
+
+                    <div class="tempoText">
+                        tempo
+                        <div id="tempo-slider-wrapper" class="tempo-slider-wrapper">
+                            <input type="range" min="0" max="125" step="1" value="125" id="tempo" class="theRange">
+                            <span id="tempoValue">125</span>
+                        </div>
+                    </div>
+
+
+                    <div class="valenceText">
+                        valence
+                        <div id="valence-slider-wrapper" class="valence-slider-wrapper">
+                            <input type="range" min="0" max="0.5" step="0.01" value="0.5" id="valence" class="theRange">
+                            <span id="valenceValue">0.5</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="playlistContainer" id="playlistContainer">
+            <div> 
+            <button class="addPlaylist" id="addPlaylist">
+                add Playlist to spotify
+            </button>
+            </div>
+            
+        </div>
+
+
+    </div>
+    <!-- <div id="optionsContainer" class="optionsContainer">
+
+            <button id="getPlaylist" class="getPlaylist">
+
+                generate playlist
+
+            </button>
+
+
+
+        </div> -->
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Flip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Observer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/MotionPathPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/EaselPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/PixiPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/TextPlugin.min.js"></script>
+
+
+    <!-- RoughEase, ExpoScaleEase and SlowMo are all included in the EasePack file -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/EasePack.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js"></script>
+    <script src="playlist.js"></script>
+
+</body>
+
+</html>
