@@ -11,7 +11,7 @@ const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
 //redirect uri for the website, seen spotify dash board
-const redirectUri = "http://127.0.0.1:5500/playlist.html?";
+const redirectUri = "https://shancau.github.io/spotifytestwebsite/playlist.html";
 
 let targetSong;
 
