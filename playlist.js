@@ -1,3 +1,5 @@
+//code is mostly finished, yay
+
 
 //Client ID from spotify developer dashboard
 const clientId = "24eb24c1e5434820898ae1db42130d8a";
@@ -17,19 +19,15 @@ let accessToken = localStorage.getItem('accessToken') || null;
 
 //checks if we have already authenticated then coverts the code to the data
 
-displayGenerate();
 
 
 //loads all event listeners on page load
 document.addEventListener('DOMContentLoaded', function () {
     initializeEventListeners();
     if (code) {
-
+        displayGenerate();
         console.log("running");
         getAccessToken(clientId, code);
-        
-        
-
     }
 });
 
@@ -40,14 +38,13 @@ function hideAuth() {
 }
 //initailizes event listeners
 
-function displayGenerate()
-{
-    var t1 = gsap.timeline( {onComplete: hideAuth});
-        
+function displayGenerate() {
+    var t1 = gsap.timeline({ onComplete: hideAuth });
+
     document.getElementById("generateContainer").style.display = "flex";
 
     t1.to(
-        '.box1', { x: '1000vw', duration: 1, ease: "sine.out" , delay: 1}
+        '.box1', { x: '1000vw', duration: 1, ease: "sine.out", delay: 1 }
     );
 
 
@@ -62,8 +59,8 @@ function displayPlaylistContainer() {
     document.getElementById("searchContainer").classList.add('hidden');
 
     setTimeout(() => {
-        document.getElementById("playlistContainer").classList.add('visible4');
-    }, 1000);
+        document.getElementById("loader").classList.add('visible5');
+    }, 500);
 
     generatePlaylist();
 
@@ -77,7 +74,7 @@ function initializeEventListeners() {
 
     document.getElementById("cover").addEventListener("click", displayPlaylistContainer);
 
-    const sliders = ['acousticness','danceability', 'energy', 'loudness', 'instrumentalness','speechiness', 'liveness', 'valence', 'tempo',];
+    const sliders = ['acousticness', 'danceability', 'energy', 'loudness', 'instrumentalness', 'speechiness', 'liveness', 'valence', 'tempo',];
 
     //adds events listeners in sliders and makes it so they are hidden before being checked
     sliders.forEach(slider => {
@@ -90,11 +87,11 @@ function initializeEventListeners() {
         const valueSpan = document.getElementById(`${slider}Value`);
 
         //checkbox switches between slider being shown or not
-        text.addEventListener('mouseenter', function() {
+        text.addEventListener('mouseenter', function () {
             showSliders(slider);
         });
-    
-        text.addEventListener('mouseleave', function() {
+
+        text.addEventListener('mouseleave', function () {
             hideSliders(slider);
         });
 
@@ -102,20 +99,19 @@ function initializeEventListeners() {
         input.addEventListener('input', function () {
             console.log(input.value);
             valueSpan.textContent = this.value;
-            if(!(checkedFeatures.includes(slider)))
-            {
+            if (!(checkedFeatures.includes(slider))) {
                 checkedFeatures.push(slider);
-                
+
             }
         });
     });
 }
 
-function showSliders(feature){
+function showSliders(feature) {
     document.getElementById(`${feature}-slider-wrapper`).classList.add('visible2');
 }
 
-function hideSliders(feature){
+function hideSliders(feature) {
     document.getElementById(`${feature}-slider-wrapper`).classList.remove('visible2');
 }
 
@@ -163,7 +159,7 @@ function displayResults(songs) {
         songDiv.appendChild(img);
 
         songDiv.innerHTML += `${song.name} - ${song.artists[0].name}`;
-            
+
 
         songDiv.addEventListener("click", () => selectSong(song));
         dropdown.appendChild(songDiv);
@@ -202,10 +198,10 @@ async function displayPlaylist(songs) {
             songDiv.appendChild(img);
 
             songDiv.innerHTML += `${song.name} - ${song.artists[0].name}`;
-            
+
             container.appendChild(songDiv);
         });
-        
+
     }
 }
 //function called when song in the dropdown menu is selected
@@ -242,7 +238,7 @@ async function selectSong(song) {
     setTimeout(() => {
         document.getElementById("sliders").classList.add('visible3');
     }, 1000);
-    
+
     clearDropdown();
 }
 
@@ -319,6 +315,12 @@ async function generatePlaylist() {
 
     filteredSongs = filteredSongs.slice(0, 100);
 
+    document.getElementById("loader").classList.remove('visible5');
+
+    setTimeout(() => {
+        document.getElementById("playlistContainer").classList.add('visible4');
+    }, 1000);
+
     //only gabs first 100 due to api limits
     displayPlaylist(filteredSongs);
 
@@ -340,7 +342,7 @@ async function getUserId(accessToken) {
 }
 
 async function addTracksToPlaylist(accessToken, trackUris, userID) {
-
+    document.getElementById("addPlaylist").innerHTML = "Added to spotify!";
     const playlist = await createPlaylist(accessToken, userID, "My Generated Playlist");
     console.log(playlist);
     const playlistId = playlist.id;
@@ -409,7 +411,7 @@ async function redirectToAuthCodeFlow() {
     params.append("client_id", clientID);
     params.append("response_type", "code");
     params.append("redirect_uri", redirectUri)
-    params.append("scope", "user-read-private user-read-email user-library-read user-library-modify user-read-recently-played user-top-read user-follow-read user-follow-modify user-read-playback-state user-modify-playback-state user-read-currently-playing playlist-modify-public playlist-modify-private");
+    params.append("scope", "user-library-read user-library-modify playlist-modify-public playlist-modify-private");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
 
