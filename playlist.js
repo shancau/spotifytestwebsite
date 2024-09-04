@@ -4,41 +4,52 @@
 //Client ID from spotify developer dashboard
 const clientId = "24eb24c1e5434820898ae1db42130d8a";
 
+//list of features that are checked
 checkedFeatures = [];
 
-//url shit to check if we got data back from spotify
+//url stuff to check if we got data back from spotify
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
 //redirect uri for the website, seen spotify dash board
-const redirectUri = "https://shancau.github.io/spotifytestwebsite/playlist.html";
+const redirectUri = "http://127.0.0.1:5500/playlist/playlist.html?";
 
+//variable for target song used later on
 let targetSong;
 
+//variable for access token
 let accessToken = localStorage.getItem('accessToken') || null;
-
-//checks if we have already authenticated then coverts the code to the data
-
-
 
 //loads all event listeners on page load
 document.addEventListener('DOMContentLoaded', function () {
+
+    //initalizes event listeners
     initializeEventListeners();
+
+    //checks if we have already authenticated then coverts the code to the data
+    //currently no way to preserve access token for an hour
     if (code) {
+
         displayGenerate();
         console.log("running");
         getAccessToken(clientId, code);
+
     }
+
 });
+
 
 //all functions below
 
+//hides the auth box
 function hideAuth() {
     document.getElementById("box1").style.display = "none";
 }
 //initailizes event listeners
 
+//displays the generate page where u can select a song
 function displayGenerate() {
+
     var t1 = gsap.timeline({ onComplete: hideAuth });
 
     document.getElementById("generateContainer").style.display = "flex";
@@ -47,13 +58,16 @@ function displayGenerate() {
         '.box1', { x: '1000vw', duration: 1, ease: "sine.out", delay: 1 }
     );
 
-
 }
 
+//hides the generate page
 function hideGen() {
+
     document.getElementById("generateContainer").style.display = "none";
+
 }
 
+//displays the playlist container
 function displayPlaylistContainer() {
 
     document.getElementById("searchContainer").classList.add('hidden');
@@ -62,31 +76,37 @@ function displayPlaylistContainer() {
         document.getElementById("loader").classList.add('visible5');
     }, 500);
 
-    generatePlaylist();
 
 }
 
+//initializes event listeners
 function initializeEventListeners() {
 
+    //listener for when the spotify auth button is clicked
     document.getElementById("authorize").addEventListener("click", redirectToAuthCodeFlow, false);
-
+    
+    //listens whenever the search button is typed on
     document.getElementById("searchInput").addEventListener("input", handleSearch);
 
+    //listener for when the cover is clicked for processing
     document.getElementById("cover").addEventListener("click", displayPlaylistContainer);
 
+    //list of all the features
     const sliders = ['acousticness', 'danceability', 'energy', 'loudness', 'instrumentalness', 'speechiness', 'liveness', 'valence', 'tempo',];
 
     //adds events listeners in sliders and makes it so they are hidden before being checked
     sliders.forEach(slider => {
+
         const text = document.querySelector(`.${slider}Text`);
 
         const sliderWrapper = document.getElementById(`${slider}-slider-wrapper`);
 
-        console.log(sliderWrapper);
         const input = document.getElementById(slider);
+
         const valueSpan = document.getElementById(`${slider}Value`);
 
-        //checkbox switches between slider being shown or not
+
+        //listeners for when the audio features are hovered over
         text.addEventListener('mouseenter', function () {
             showSliders(slider);
         });
@@ -97,22 +117,91 @@ function initializeEventListeners() {
 
         //updates slider value on change
         input.addEventListener('input', function () {
-            console.log(input.value);
+            
+            //stores inital value
+            const initialValue = input.value;
+
+            //changes number to the value of the sldier
             valueSpan.textContent = this.value;
+
+            //checks when the slider is changed if the slider is in the selected features list
+            //if its not it adds
             if (!(checkedFeatures.includes(slider))) {
+
                 checkedFeatures.push(slider);
 
             }
+
         });
+
+    })
+
+    const cover = document.getElementById("coverContainer");
+    const c = document.getElementById("cover");
+
+    const genDiv = document.getElementById("genDiv");
+
+    cover.addEventListener('mouseenter', () => {
+        c.classList.add('coverHover');
+        genDiv.classList.add('genVisible');
     });
+
+    cover.addEventListener('mouseleave', () => {
+        c.classList.remove('coverHover');
+        genDiv.classList.remove('genVisible');
+    });
+
+    const gen = Array.from(document.getElementsByClassName("gen"));
+
+    gen.forEach(g => {
+        const genText = g.querySelector('.genText');
+
+
+
+        console.log(genText);
+
+        g.addEventListener('mouseenter', () => {
+            genText.classList.add('showText');
+        });
+
+        g.addEventListener('mouseleave', () => {
+            genText.classList.remove('showText');
+        });
+
+    });
+
+    document.getElementById("genLiked").addEventListener("click", () => showSliderContainer());
+
+    document.getElementById("genRec").addEventListener("click", () => generatePlaylistRec());
 }
 
+function showSliderContainer() {
+
+    document.getElementById("sliders").style.display = "flex";
+
+    document.getElementById("sliders").classList.add('visible3');
+
+    document.getElementById("genRec").style.display = "none";
+
+    document.getElementById("likedText").style.innerHTML = "Select range of audio features and press button again";
+
+    document.getElementById("genLiked").removeEventListener("click", () => showSliderContainer());
+
+    document.getElementById("genLiked").addEventListener("click", () => generatePlaylistLiked());
+
+
+}
+//function for showing the sliders animation
 function showSliders(feature) {
+
     document.getElementById(`${feature}-slider-wrapper`).classList.add('visible2');
+
 }
 
 function hideSliders(feature) {
+
     document.getElementById(`${feature}-slider-wrapper`).classList.remove('visible2');
+
 }
 
 //function called when searching in the text box, only starts search when term is greater than 2
@@ -204,6 +293,7 @@ async function displayPlaylist(songs) {
 
     }
 }
+
 //function called when song in the dropdown menu is selected
 async function selectSong(song) {
 
@@ -216,34 +306,62 @@ async function selectSong(song) {
     targetSong = audioFeatures;
     console.log(audioFeatures);
 
-    //displays audio features
-    // document.getElementById("songInfo").innerHTML =
-    //     `
-    // popularity: ${song.popularity}<br>
-    // danceability: ${audioFeatures.danceability}<br>
-    // energy: ${audioFeatures.energy}<br>
-    // key: ${audioFeatures.key}<br>
-    // loudness: ${audioFeatures.loudness}<br>
-    // mode: ${audioFeatures.mode}<br>
-    // speechiness: ${audioFeatures.speechiness}<br>
-    // acousticness: ${audioFeatures.acousticness}<br>
-    // instrumentalness: ${audioFeatures.instrumentalness}<br>
-    // liveness: ${audioFeatures.liveness}<br>
-    // valence: ${audioFeatures.valence}<br>
-    // tempo: ${audioFeatures.tempo}<br>
-    // time_signature: ${audioFeatures.time_signature}
-    // `;
-
     document.getElementById("songContainer").classList.add('visible');
-    setTimeout(() => {
-        document.getElementById("sliders").classList.add('visible3');
-    }, 1000);
 
     clearDropdown();
 }
 
 //function to create playlist based on selected audio features
-async function generatePlaylist() {
+
+async function generatePlaylistRec() {
+
+    document.getElementById("searchContainer").classList.add('hidden');
+    
+
+    const targetSongID = await getSong(targetSong.id);
+
+    console.log(targetSongID.artists);
+
+    artists = targetSongID.artists.map(artist => artist.id).join(",");
+
+
+    
+    const result = await fetch(`https://api.spotify.com/v1/recommendations?
+        limit=50&seed_tracks=${targetSongID.id}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+
+
+    const data = await result.json();
+
+
+
+    songs = data.tracks.map(song => song.id);
+
+    console.log(songs);
+
+
+    //timer to show the playlist container
+    setTimeout(() => {
+        document.getElementById("playlistContainer").classList.add('visible4');
+    }, 500);
+
+    //only grabs first 100 due to api limits
+    displayPlaylist(songs);
+
+
+    songs = songs.map(id => `spotify:track:${id}`);
+
+    const userId = await getUserId(accessToken);
+
+    document.getElementById("addPlaylist").addEventListener("click", () => addTracksToPlaylist(accessToken, songs, userId));
+
+}
+async function generatePlaylistLiked() {
+
+    displayPlaylistContainer();
 
 
     //creates a json list of audiofeatures and their current slider value
@@ -315,13 +433,15 @@ async function generatePlaylist() {
 
     filteredSongs = filteredSongs.slice(0, 100);
 
+    //hides the loading screen
     document.getElementById("loader").classList.remove('visible5');
 
+    //timer to show the playlist container
     setTimeout(() => {
         document.getElementById("playlistContainer").classList.add('visible4');
-    }, 1000);
+    }, 500);
 
-    //only gabs first 100 due to api limits
+    //only grabs first 100 due to api limits
     displayPlaylist(filteredSongs);
 
 
@@ -333,6 +453,7 @@ async function generatePlaylist() {
 
 }
 
+//grabs the users Id
 async function getUserId(accessToken) {
     const response = await fetch('https://api.spotify.com/v1/me', {
         headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -341,6 +462,7 @@ async function getUserId(accessToken) {
     return data.id;
 }
 
+//adds tracks to a spotify playlist, also creates the playlist
 async function addTracksToPlaylist(accessToken, trackUris, userID) {
     document.getElementById("addPlaylist").innerHTML = "Added to spotify!";
     const playlist = await createPlaylist(accessToken, userID, "My Generated Playlist");
@@ -360,6 +482,7 @@ async function addTracksToPlaylist(accessToken, trackUris, userID) {
     console.log(response.json());
 }
 
+//creates a playlist
 async function createPlaylist(accessToken, userId, playlistName) {
     const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
         method: 'POST',
@@ -375,21 +498,24 @@ async function createPlaylist(accessToken, userId, playlistName) {
     return await response.json();
 }
 
-
+//compares the audio features to the target song
 function compareAudioFeatures(item, targetSong, ranges, checkedFeatures) {
     return checkedFeatures.every(feature =>
         isWithinRange(item[feature], targetSong[feature], ranges[feature])
     );
 }
 
+//checks if the audio feature is within the range
 function isWithinRange(value, target, range) {
     return value >= target - range && value <= target + range;
 }
 
+//clears dropdown menu
 function clearDropdown() {
     document.getElementById("songDropdown").innerHTML = "";
 }
 
+//grabs audio features for a specific song, only one
 async function getAudioFeatures(id) {
     const result = await fetch(`https://api.spotify.com/v1/audio-features/${id}`, {
         method: "GET",
@@ -470,10 +596,7 @@ async function getSong(id) {
 
     data = await result.json();
 
-    return data.name;
+    return data;
 
 }
-
-
-document.getElementById("searchInput").addEventListener("input", handleSearch);
 
